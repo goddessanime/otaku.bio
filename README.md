@@ -11,4 +11,4 @@ npm run start
 ```
 
 
-This will start the server on port 3000. You can then make requests to the server by sending a GET request to `http://localhost:5000/{username}`. Replace `{username}` with the desired username. The server will then send a request to https://goddessanime.com to retrieve the user data and return a custom link to their profile.
+This will start the server on port 5000. You can then make requests to the server by sending a GET request to `http://localhost:5000/{username}`. Replace `{username}` with the desired username. The server will then send a request to https://goddessanime.com to retrieve the user data and return a custom link to their profile.
