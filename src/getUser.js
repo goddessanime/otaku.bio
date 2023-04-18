@@ -20,7 +20,7 @@ async function getUser(username) {
     } catch (error) {
         return {
             error: error.message,
-            status: error.response.status,
+            status: 404,
             params: {
                 username: username || 'undefined',
             },
