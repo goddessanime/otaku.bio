@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 // Routes
 app.get('/:username', async (req, res) => {
     const username = req.params.username;
-    const data = await getUser(username);
+    const data = await getUser(username, req.hostname);
     
     const findBotHeader = () => {
         const botHeader = headers.find(header => header.toLowerCase() === req.headers['user-agent'].toLowerCase());

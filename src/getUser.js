@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-async function getUser(username) {
+async function getUser(username, hostname) {
     console.log('Getting user: ' + username);
     if (!username) {
         process.emitWarning('No username provided');
@@ -16,6 +16,16 @@ async function getUser(username) {
     try {
         const { data } = await axios.get(`${process.env.URL}/api/v1/customname/${username}`);
 
+        if (data.domain !== hostname) {
+            return {
+                error: 'User not found',
+                status: 404,
+                params: {
+                    username: username || 'undefined',
+                },
+            }
+        }
+        
         return data;
     } catch (error) {
         return {
