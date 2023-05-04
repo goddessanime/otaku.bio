@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const getUser = require('./getUser');
 const EnvService = require('./service/env');
 const envService = new EnvService();
+const domains = require('./domains');
 
 let headers = envService.makeArrayWithName("headers");
 
@@ -12,19 +13,26 @@ let headers = envService.makeArrayWithName("headers");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-// Set the 'X-Powered-By' header to 'Express'
 app.use((req, res, next) => {
-    res.set('X-Powered-By', 'goddessanime.com');
+    res.set('X-Powered-By', 'srv.goddessanime.com');
     res.set("Referer", "https://goddessanime.com/");
-    res.set("Owner", "https://zenithlive.lol/")
+    res.set(`Shard-Id`, `${process.env.SHARD_ID}`);
     next();
 });
+
+const getHostname = (req) => {
+    const hostname = req.hostname;
+
+    if (hostname === 'localhost') return 'otaku.bio';
+
+    return hostname;
+};
 
 
 // Routes
 app.get('/:username', async (req, res) => {
     const username = req.params.username;
-    const data = await getUser(username, req.hostname);
+    const data = await getUser(username, getHostname(req));
     
     const findBotHeader = () => {
         const botHeader = headers.find(header => header.toLowerCase() === req.headers['user-agent'].toLowerCase());
@@ -37,6 +45,8 @@ app.get('/:username', async (req, res) => {
     
     if (data.error) {
         if (botHeader) return res.status(data.status).json(data);
+
+        console.log(data);
     
         res.redirect(`${process.env.URL}/error`);
     }
@@ -47,8 +57,17 @@ app.get('/:username', async (req, res) => {
     }
 });
 
+app.get("/api/domains", (req, res) => {
+    res.json(domains);
+});
+
 app.get('*', (req, res) => {
-    res.redirect(`${process.env.URL}`)
+    const path = req.path;
+    const query = req.query;
+
+    let url = `${process.env.URL}${path ? path : ''}${query ? Object.keys(query).map(key => `${key}=${query[key]}`).join('&') : ''}`;
+
+    res.redirect(url);
 });
 
 // Connection
